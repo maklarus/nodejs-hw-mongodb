@@ -1,6 +1,11 @@
+import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import pinoHTTP from 'pino-http';
+import { Contact } from './models/contact.js';
+
+
+
 
 
   export const setupServer = () => {
@@ -23,17 +28,27 @@ import pinoHTTP from 'pino-http';
         },
     });
 
-    app.use(pino);
+      app.use(pino);
+
+      app.use(express.json());
 
 
-    const PORT = 3000;
 
 
-    app.get('/', (req, res) => {
-        res.send({
-            message: 'Hello big world!',
-        });
-    });
+
+      app.get('/contacts', async (req, res) => {
+          console.log('Received request for /contacts'); //додаткове
+        try {
+            const contacts = await Contact.find();
+             console.log('Fetched contacts:', contacts); // Додайте цей рядок для логування даних
+            res.send({ status: 200, message: 'Successfully found contacts!', data: contacts });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({ message: 'Internal Server Error' });
+
+        }
+    }
+      );
 
       app.use((req, res, next) => {
           res.status(404).send({
@@ -41,6 +56,8 @@ import pinoHTTP from 'pino-http';
 
           });
       });
+
+      const PORT = process.env.PORT || 3000;
 
     app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
