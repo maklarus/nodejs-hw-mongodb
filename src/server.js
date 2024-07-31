@@ -25,13 +25,7 @@ export function setupServer() {
 
     app.get('/', async (req, res) => {
       try {
-        const contacts = await Contact.find();
-
-        res.send({
-          status: 200,
-          message: 'Successfully found contacts!',
-          data: contacts,
-        });
+        res.send('Hello, World!');
       } catch (error) {
         console.error(error);
         res.status(500).send({ message: 'Internal Server Error' });
@@ -59,18 +53,17 @@ export function setupServer() {
 
         const contacts = await Contact.findById(id);
 
-        res.send({
-          status: 200,
-          message: `Successfully found contact with id ${id}!`,
-          data: contacts,
-        });
         if (contacts === null) {
           return res
             .status(404)
             .send({ status: 404, message: 'Contact not found' });
         }
 
-        res.send({ status: 200, data: contacts });
+        res.send({
+          status: 200,
+          message: `Successfully found contact with id ${id}!`,
+          data: contacts,
+        });
       } catch (error) {
         console.error(error);
         res.status(500).send({ message: 'Internal Server Error' });
