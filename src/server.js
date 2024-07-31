@@ -23,6 +23,21 @@ export function setupServer() {
       }),
     );
 
+    app.get('/', async (req, res) => {
+      try {
+        const contacts = await Contact.find();
+
+        res.send({
+          status: 200,
+          message: 'Successfully found contacts!',
+          data: contacts,
+        });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Internal Server Error' });
+      }
+    });
+
     app.get('/contacts', async (req, res) => {
       try {
         const contacts = await Contact.find();
