@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import pinoHTTP from 'pino-http';
 import { initDBConnection } from './db.js';
+import { Contact } from './models/contact.js';
 
 const app = express();
 
@@ -22,8 +23,43 @@ export function setupServer() {
       }),
     );
 
-    app.get('/', (req, res) => {
-      res.send('GOOD LUCK HAVE FUN');
+    app.get('/contacts', async (req, res) => {
+      try {
+        const contacts = await Contact.find();
+
+        res.send({
+          status: 200,
+          message: 'Successfully found contacts!',
+          data: contacts,
+        });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Internal Server Error' });
+      }
+    });
+
+    app.get('/contacts/:id', async (req, res) => {
+      try {
+        const { id } = req.params;
+
+        const contacts = await Contact.findById(id);
+
+        res.send({
+          status: 200,
+          message: `Successfully found contact with id ${id}!`,
+          data: contacts,
+        });
+        if (contacts === null) {
+          return res
+            .status(404)
+            .send({ status: 404, message: 'Contact not found' });
+        }
+
+        res.send({ status: 200, data: contacts });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Internal Server Error' });
+      }
     });
 
     app.use((req, res, next) => {
