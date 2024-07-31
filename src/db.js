@@ -5,7 +5,7 @@ const { MONGODB_USER, MONGODB_PASSWORD, MONGODB_URL, MONGODB_DB } = process.env;
 async function initDBConnection() {
   try {
     await mongoose.connect(
-      `${MONGODB_URL}//${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_DB}`,
+      `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_URL}/${MONGODB_DB}?retryWrites=true&w=majority&appName=Cluster0`,
     );
 
     console.log('Mongo connection successfully established!');
