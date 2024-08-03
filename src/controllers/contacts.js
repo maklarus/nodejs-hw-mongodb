@@ -1,12 +1,12 @@
 import { Contact } from "../models/contact.js";
+import createHttpError from "http-errors";
 
 export const getAllContactsController = async (req, res) => {
     try {
         const contacts = await Contact.find();
             res.send({ status: 200, message: 'Successfully found contacts!', data: contacts });
     } catch (error) {
-        console.error(error);
-        res.status(500).send({ message: 'Internal Server Error' });
+        throw createHttpError(500, error.message);
     }
 };
 
@@ -16,14 +16,11 @@ export const getAllContactsController = async (req, res) => {
               const contact = await Contact.findById(contactId);
 
               if (contact === null) {
-                  return res
-                      .status(404)
-                      .send({ status: 404, message: 'Contact not found' });
+                  throw createHttpError(404, 'Contact not found');
               }
               res.send({ status: 200, message: `Successfully found contact with id ${contactId}`, data: contact });
 
           } catch (error) {
-              console.error(error);
-              res.status(500).send({ message: 'Internal server error' });
-          };
+              throw createHttpError(500, error.message);
+          }
       };
