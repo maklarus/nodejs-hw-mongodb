@@ -11,3 +11,12 @@ export function getContactById(contactId) {
 export function createContact(payload) {
     return Contact.create(payload);
 }
+
+export function updateContact(contactId, updateData){
+    return Contact.findByIdAndUpdate(contactId, updateData, {
+        new: true,
+        runValidators: true,
+    });
+}
+
+
