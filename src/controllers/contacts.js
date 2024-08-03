@@ -1,26 +1,39 @@
-import { Contact } from "../models/contact.js";
+
 import createHttpError from "http-errors";
+import { createContact, getAllContacts, getContactById } from "../services/contacts.js";
 
 export const getAllContactsController = async (req, res, next) => {
-    try {
-        const contacts = await Contact.find();
+
+        const contacts = await getAllContacts();
             res.send({ status: 200, message: 'Successfully found contacts!', data: contacts });
-    } catch (error) {
-        next(createHttpError(500, error.message));
-    }
+
 };
 
- export const getContactByIdController =  async (req, res, next) => {
-          const { contactId } = req.params;
-          try {
-              const contact = await Contact.findById(contactId);
+export const getContactByIdController = async (req, res, next) => {
+    const { contactId } = req.params;
 
-              if (!contact) {
-                  return next(createHttpError(404, 'Contact not found'));
-              }
-              res.send({ status: 200, message: `Successfully found contact with id ${contactId}`, data: contact });
+    const contact = await getContactById(contactId);
 
-          } catch (error) {
-              next(createHttpError(500, error.message));
-          }
-      };
+    if (contact === null) {
+        return next(createHttpError.NotFound('Contact not found'));
+    }
+    res.send({ status: 200, message: `Successfully found contact with id ${contactId}`, data: contact });
+};
+
+export const createContactController = async (req, res) => {
+    const contact = {
+        name: req.body.name,
+        phoneNumber: req.body.phoneNumber,
+        email: req.body.email,
+        isFavourite: req.body.isFavourite,
+        contactType: req.body.contactType,
+    };
+
+    const newContact = await createContact(contact);
+
+    res.status(201).send({
+        status: 201,
+        message: 'Successfully created a contact!',
+        data: newContact,
+    });
+};
