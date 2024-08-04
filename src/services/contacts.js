@@ -19,4 +19,8 @@ export function updateContact(contactId, updateData){
     });
 }
 
+export function deleteContact(contactId) {
+    return Contact.findByIdAndDelete(contactId);
+}
+
 
