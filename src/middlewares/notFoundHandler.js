@@ -1,5 +1,3 @@
-import createHttpError from 'http-errors';
-
 export function notFoundHandler(req, res, next) {
-  return createHttpError(404, 'Contact not found');
+  res.status(404).send({ status: 404, message: 'Rout not found' });
 }
