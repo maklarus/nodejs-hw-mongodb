@@ -14,7 +14,7 @@ const contactSchema = new mongoose.Schema(
       type: String,
       default: undefined,
     },
-    isFavorite: {
+    isFavourite: {
       type: Boolean,
       default: false,
     },

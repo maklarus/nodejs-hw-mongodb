@@ -6,9 +6,15 @@ import {
   deleteContact,
   changeContact,
 } from '../services/contacts.js';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
 
 export async function getContactsController(req, res, next) {
-  const contacts = await getContacts();
+  const { page, perPage } = parsePaginationParams(req.query);
+
+  const { sortBy, sortOrder } = parseSortParams(req.query);
+
+  const contacts = await getContacts({ page, perPage, sortBy, sortOrder });
 
   res.send({
     status: 200,
@@ -51,8 +57,6 @@ export async function createContactController(req, res) {
   res
     .status(201)
     .send({ status: 201, message: 'Student created', data: createdContact });
-
-  res.send('Student created');
 }
 
 export async function deleteContactController(req, res, next) {
