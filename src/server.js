@@ -2,7 +2,10 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import pinoHTTP from 'pino-http';
+
+import authRoutes from "./routes/auth.js";
 import contactsRouter from './routes/contacts.js';
+
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
@@ -30,6 +33,7 @@ import { notFoundHandler } from './middlewares/notFoundHandler.js';
       app.use(pino);
       app.use(express.json());
 
+      app.use('/auth', authRoutes);
       app.use('/contacts', contactsRouter);
 
       app.use(notFoundHandler);
