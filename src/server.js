@@ -2,6 +2,7 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import pinoHTTP from 'pino-http';
+import cookieParser from 'cookie-parser';
 
 import authRoutes from "./routes/auth.js";
 import contactsRouter from './routes/contacts.js';
@@ -14,7 +15,9 @@ import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
 
   export const setupServer = () => {
-    const app = express();
+      const app = express();
+
+      app.use(cookieParser());
 
     app.use(
         cors({

@@ -1,13 +1,19 @@
+import crypto from "node:crypto";
+
+
 import bcrypt from "bcrypt";
 import createHttpError from "http-errors";
 
 import { User } from "../models/user.js";
+import { Session } from "../models/session.js";
+
+import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "../constans/sortOrder.js";
 
 export async function registerUser(payload) {
     const maybeUser = await User.findOne({ email: payload.email });
 
     if (maybeUser !== null) {
-        throw createHttpError(409, "Email already in user");
+        throw createHttpError(409, "Email in use");
     }
 
 
@@ -28,4 +34,22 @@ export async function loginUser(email, password) {
     if (isMatch === false) {
         throw createHttpError(401, "Unauthorized");
     }
+
+    await Session.deleteOne({ userId: maybeUser._id });
+
+   const accessToken = crypto.randomBytes(30).toString("base64");
+    const refreshToken = crypto.randomBytes(30).toString("base64");
+
+    return Session.create({
+        userId: maybeUser._id,
+        accessToken,
+        refreshToken,
+        accessTokenValidUntil: new Date(Date.now() + ACCESS_TOKEN_TTL),
+        refreshTokenValidUntil: new Date(Date.now() + REFRESH_TOKEN_TTL),
+    });
+}
+
+
+export function logoutUser(sessionId) {
+    return Session.deleteOne({ _id: sessionId });
 }
