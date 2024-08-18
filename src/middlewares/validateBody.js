@@ -1,18 +1,20 @@
 import createHttpError from "http-errors";
 
 export function validateBody(schema) {
-    return (req, res, next) => {
-        const result = schema.validate(req.body, { abortEarly: false });
+    return async (req, res, next) => {
+        try {
+            await schema.validateAsync(req.body, { abortEarly: false });
 
-        if (typeof result.error !== 'undefined') {
-            return next(
+            next();
+
+        } catch (err) {
+
+            next(
                 createHttpError(
                     400,
-                    result.error.details.map((err) => err.message).join(','),
+                    err.details.map((detail) => detail.message).join(','),
                 ),
             );
         }
-        next();
     };
 }
-
