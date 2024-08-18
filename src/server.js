@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import authRoutes from "./routes/auth.js";
 import contactsRouter from './routes/contacts.js';
 
+import { authenticate } from './middlewares/auth.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
@@ -37,7 +38,7 @@ import { notFoundHandler } from './middlewares/notFoundHandler.js';
       app.use(express.json());
 
       app.use('/auth', authRoutes);
-      app.use('/contacts', contactsRouter);
+      app.use('/contacts', authenticate, contactsRouter);
 
       app.use(notFoundHandler);
       app.use(errorHandler);
