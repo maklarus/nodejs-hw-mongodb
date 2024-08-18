@@ -14,6 +14,7 @@ import {
 
 export const getAllContactsController = async (req, res, next) => {
 
+
     const { page, perPage } = parsePaginationParams(req.query);
     const { sortBy, sortOrder } = parseSortParams(req.query);
     const filter = parseFilterParams(req.query);
@@ -24,6 +25,7 @@ export const getAllContactsController = async (req, res, next) => {
         sortBy,
         sortOrder,
         filter,
+        userId: req.user._id,
     });
     res.send({ status: 200, message: 'Successfully found contacts!', data: contacts });
 
@@ -37,6 +39,11 @@ export const getContactByIdController = async (req, res, next) => {
     if (contact === null) {
         return next(createHttpError.NotFound('Contact not found'));
     }
+
+    if (contact.userId.toString() !== req.user._id.toString()) {
+        return next(createHttpError(403,'Contact not allowed'));
+    }
+
     res.send({ status: 200, message: `Successfully found contact with id ${contactId}`, data: contact });
 };
 
@@ -47,6 +54,7 @@ export const createContactController = async (req, res) => {
         email: req.body.email,
         isFavourite: req.body.isFavourite,
         contactType: req.body.contactType,
+        userId: req.user._id,
     };
 
     const newContact = await createContact(contact);
@@ -62,7 +70,7 @@ export const updateContactController = async (req, res, next) => {
     const { contactId } = req.params;
     const updateData = req.body;
 
-    const updatedContact = await updateContact(contactId, updateData);
+    const updatedContact = await updateContact(contactId, req.user._id, updateData);
 
     if (updatedContact === null) {
         return next(createHttpError.NotFound('Contact not found'));
@@ -78,11 +86,17 @@ export const updateContactController = async (req, res, next) => {
 export const deleteContactController = async (req, res, next) => {
     const { contactId } = req.params;
 
-    const deletedContact = await deleteContact(contactId);
+    const contact = await getContactById(contactId);
 
-    if (deletedContact === null) {
+    if (contact === null) {
         return next(createHttpError.NotFound('Contact not found'));
     }
+
+    if (!contact.userId || contact.userId.toString() !== req.user._id.toString()) {
+        return next(createHttpError(403, 'Contact not allowed'));
+    }
+
+      await deleteContact(contactId, req.user._id);
 
     res.status(204).end();
 };

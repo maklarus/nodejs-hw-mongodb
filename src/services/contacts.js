@@ -6,6 +6,7 @@ export async function getAllContacts({
     sortBy,
     sortOrder,
     filter,
+    userId,
 }) {
     const skip = page > 0 ? (page - 1) * perPage : 0;
 
@@ -20,7 +21,7 @@ export async function getAllContacts({
     contactQuery.where('isFavourite').equals(filter.isFavourite);
   }
 
-
+    contactQuery.where("userId").equals(userId);
 
     const [count, contacts] = await Promise.all([
         Contact.countDocuments(contactQuery),
@@ -44,23 +45,23 @@ export async function getAllContacts({
     };
 }
 
-export function getContactById(contactId) {
-    return Contact.findById(contactId);
+export function getContactById(contactId, userId) {
+    return Contact.findById({_id: contactId, userId });
 }
 
 export function createContact(payload) {
     return Contact.create(payload);
 }
 
-export function updateContact(contactId, updateData){
-    return Contact.findByIdAndUpdate(contactId, updateData, {
+export function updateContact(contactId, userId, updateData){
+    return Contact.findOneAndUpdate({ _id: contactId, userId }, updateData, {
         new: true,
         runValidators: true,
     });
 }
 
-export function deleteContact(contactId) {
-    return Contact.findByIdAndDelete(contactId);
+export function deleteContact(contactId, userId) {
+    return Contact.findOneAndDelete({_id: contactId, userId});
 }
 
 
