@@ -7,7 +7,9 @@ import createHttpError from "http-errors";
 import { User } from "../models/user.js";
 import { Session } from "../models/session.js";
 
-import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "../constans/sortOrder.js";
+import { sendMail } from "../utils/sendMail.js";
+
+import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL, SMTP } from "../constans/sortOrder.js";
 
 export async function registerUser(payload) {
     const maybeUser = await User.findOne({ email: payload.email });
@@ -73,7 +75,20 @@ export async function refreshUserSession(sessionId, refreshToken) {
         accessTokenValidUntil: new Date(Date.now() + ACCESS_TOKEN_TTL),
         refreshTokenValidUntil: new Date(Date.now() + REFRESH_TOKEN_TTL),
     });
+}
 
+export async function sendResetEmail(email) {
+    const user = await User.findOne({ email });
 
+    if (user === null) {
+        throw createHttpError(404, "User not found");
+    }
+
+    await sendMail({
+        from: SMTP.FROM_EMAIL,
+        to: email,
+        subject: "Reset your password",
+        html: "<h1>Reset your password</h1>"
+    });
 }
 
