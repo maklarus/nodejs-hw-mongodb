@@ -1,3 +1,5 @@
+import fs from "node:fs/promises";
+import path from "node:path";
 
 import createHttpError from "http-errors";
 
@@ -48,6 +50,9 @@ export const getContactByIdController = async (req, res, next) => {
 };
 
 export const createContactController = async (req, res) => {
+
+    await fs.rename(req.file.path, path.resolve("src", "public/avatars", req.file.filename));
+
     const contact = {
         name: req.body.name,
         phoneNumber: req.body.phoneNumber,

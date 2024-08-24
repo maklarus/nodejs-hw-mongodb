@@ -1,9 +1,21 @@
 import express from "express";
 
 import { validateBody } from "../middlewares/validateBody.js";
-import { registerSchema, loginSchema, sendResetEmailSchema } from "../validation/auth.js";
+import {
+    registerSchema,
+    loginSchema,
+    sendResetEmailSchema,
+    resetPasswordSchema,
+} from "../validation/auth.js";
 import { ctrlWrapper } from "../utils/ctrlWrapper.js";
-import { registerController, loginController,logoutController, refreshController, sendResetEmailController } from "../controllers/auth.js";
+import {
+    registerController,
+    loginController,
+    logoutController,
+    refreshController,
+    sendResetEmailController,
+    resetPasswordController,
+} from "../controllers/auth.js";
 
 
 const router = express.Router();
@@ -37,5 +49,11 @@ router.post(
     jsonParser,
     validateBody(sendResetEmailSchema),
     ctrlWrapper(sendResetEmailController));
+
+router.post(
+    "/reset-password",
+    jsonParser,
+    validateBody(resetPasswordSchema),
+    ctrlWrapper(resetPasswordController));
 
 export default router;

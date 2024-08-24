@@ -7,9 +7,13 @@ import {
     getContactByIdController,
     updateContactController,
 } from '../controllers/contacts.js';
+
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+
+import { upload } from '../middlewares/upload.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import { validateBody } from '../middlewares/validateBody.js';
+
 import { contactValidationSchema , updateContactValidationSchema} from '../validation/contacts.js';
 
 
@@ -31,6 +35,7 @@ router.get(
 router.post(
     '/',
     jsonParser,
+    upload.single("photo"),
     validateBody(contactValidationSchema),
     ctrlWrapper(createContactController),
 );
