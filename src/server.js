@@ -1,3 +1,4 @@
+import path from "node:path";
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
@@ -17,6 +18,8 @@ import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
   export const setupServer = () => {
       const app = express();
+
+      app.use("/avatars", express.static(path.resolve("src", "public/avatars")));
 
       app.use(cookieParser());
 

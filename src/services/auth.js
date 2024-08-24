@@ -92,7 +92,9 @@ export async function sendResetEmail(email) {
     const resetToken = jwt.sign({
         sub: user._id,
         email: user.email,
-    }, process.env.JWT_SECRET, { expiresIn: "2 days" });
+    }, process.env.JWT_SECRET, { expiresIn: "5m" });
+
+    const resetUrl = `${process.env.APP_DOMAIN}/reset-password?token=${resetToken}`;
 
     const templateSource = fs.readFileSync(
         path.resolve("src/templates/reset-password.hbs"),
@@ -100,7 +102,7 @@ export async function sendResetEmail(email) {
 
     const template = handlebars.compile(templateSource);
 
-    const html = template({ name: user.name, resetToken });
+    const html = template({ name: user.name, resetUrl });
 
     try {
         await sendMail({
