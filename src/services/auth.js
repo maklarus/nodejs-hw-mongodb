@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import fs from "node:fs";
 import path from "node:path";
 
@@ -89,16 +91,21 @@ export async function sendResetEmail(email) {
         throw createHttpError(404, "User not found");
     }
 
-    const resetToken = jwt.sign({
+    const resetToken = jwt.sign(
+        {
         sub: user._id,
         email: user.email,
-    }, process.env.JWT_SECRET, { expiresIn: "5m" });
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "5m" },
+    );
 
     const resetUrl = `${process.env.APP_DOMAIN}/reset-password?token=${resetToken}`;
 
     const templateSource = fs.readFileSync(
         path.resolve("src/templates/reset-password.hbs"),
-        { encoding: "UTF-8" });
+        { encoding: "UTF-8" },
+    );
 
     const template = handlebars.compile(templateSource);
 
