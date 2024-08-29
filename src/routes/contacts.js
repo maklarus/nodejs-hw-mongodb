@@ -1,53 +1,44 @@
 import express from 'express';
 
 import {
-    createContactController,
-    deleteContactController,
-    getAllContactsController,
-    getContactByIdController,
-    updateContactController,
+  createContactController,
+  deleteContactController,
+  getAllContactsController,
+  getContactByIdController,
+  updateContactController,
 } from '../controllers/contacts.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+import { upload } from '../middlewares/upload.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import { validateBody } from '../middlewares/validateBody.js';
-import { contactValidationSchema , updateContactValidationSchema} from '../validation/contacts.js';
-
-
-
-
+import {
+  contactValidationSchema,
+  updateContactValidationSchema,
+} from '../validation/contacts.js';
 
 const router = express.Router();
 const jsonParser = express.json();
 
-
 router.get('/', ctrlWrapper(getAllContactsController));
 
-router.get(
-    '/:contactId',
-    isValidId,
-    ctrlWrapper(getContactByIdController)
-);
+router.get('/:contactId', isValidId, ctrlWrapper(getContactByIdController));
 
 router.post(
-    '/',
-    jsonParser,
-    validateBody(contactValidationSchema),
-    ctrlWrapper(createContactController),
+  '/',
+  jsonParser,
+  upload.single('photo'),
+  validateBody(contactValidationSchema),
+  ctrlWrapper(createContactController),
 );
 
 router.patch(
-    '/:contactId',
-    isValidId,
-    jsonParser,
-    validateBody(updateContactValidationSchema),
-    ctrlWrapper(updateContactController),
+  '/:contactId',
+  isValidId,
+  jsonParser,
+  validateBody(updateContactValidationSchema),
+  ctrlWrapper(updateContactController),
 );
 
-router.delete(
-    '/:contactId',
-    isValidId,
-    ctrlWrapper(deleteContactController),
-);
-
+router.delete('/:contactId', isValidId, ctrlWrapper(deleteContactController));
 
 export default router;
