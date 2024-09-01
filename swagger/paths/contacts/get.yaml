@@ -37,12 +37,20 @@ parameters:
     description: 'Order of sorting (ascending or descending).'
     example: 'asc'
   - in: query
-    name: filter
+    name: contactType
     required: false
     schema:
       type: string
-    description: 'Filter conditions for querying contacts.'
-    example: 'contactType'
+      enum: [work, home, personal]
+    description: 'Filter conditions for type of contact'
+    example: 'work'
+  - in: query
+    name: isFavourite
+    required: false
+    schema:
+      type: boolean
+    description: ' Type of isFavourite'
+    example: true
 responses:
   '200':
     description: 'Get all contacts'
@@ -62,8 +70,8 @@ responses:
               type: string
               example: 'Successfully found contacts!'
             data:
-              $ref: ..\..\components\schemas\contact.yaml
+              $ref: ../../components/schemas/contact.yaml
   '401':
-    $ref: ..\..\components\responses\401.yaml
+    $ref: ../../components/responses/401.yaml
   '500':
-    $ref: ..\..\components\responses\500.yaml
+    $ref: ../../components/responses/500.yaml
